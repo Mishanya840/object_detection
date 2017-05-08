@@ -19,7 +19,7 @@ char* canny_window = "Canny";
   int scale = 1;
   int delta = 0;
   int ddepth = CV_16S;
-  int lowThreshold = 1;
+  int lowThreshold = 0;
   int const max_lowThreshold = 100;
   int ratio = 3;
   int kernel_size = 3;
@@ -33,16 +33,16 @@ char* canny_window = "Canny";
 
 void processVideo(char* videoFilename);
 
-void CannyThreshold(int, void*){
-    src.copyTo(canny);
+Mat CannyThreshold(int, Mat canny){
     cvtColor( canny, canny, COLOR_BGR2GRAY );
     if (blursize != 0){
         blur(canny, canny, Size(blursize,blursize));
     }
     if (lowThreshold != 0) {
-        Canny( canny, canny, lowThreshold, lowThreshold*ratio, kernel_size );
+        Canny(canny, canny, lowThreshold, lowThreshold*ratio, kernel_size );
     }
-    imshow( canny_window, canny );
+    return canny;
+    //imshow( canny_window, canny );
 }
 
 
@@ -70,6 +70,7 @@ void processVideo(char* videoFilename) {
             cerr << "Exiting..." << endl;
             exit(EXIT_FAILURE);
         }
+        frame = CannyThreshold(0,frame);
         //update the background model
         pMOG2->apply(frame, fgMaskMOG2,0);
         //get the frame number and write it on the current frame
